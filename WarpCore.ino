@@ -137,7 +137,6 @@ void loop()
 void standard()
 {
   ReactorHue = MainHue;
-
   chase();
 }
 
@@ -232,6 +231,7 @@ void chase()
   {
     incrementHue();
   }
+
   // Ramp LED brightness
   for (int value = 32; value < 255; value = value + Rate)
   {
@@ -247,19 +247,28 @@ void chase()
       if (Top < TopLEDtotal)
       {
         LEDarray[Top] = CHSV(MainHue, Saturation, value);
+        if (WarpFactor == 0) {
+          LEDarray[Top] = CHSV(0, Saturation, 0);
+        }
       }
       if (Bottom > TopLEDcount && Bottom < NUM_LEDS)
       {
         LEDarray[Bottom] = CHSV(MainHue, Saturation, value);
+        if (WarpFactor == 0) {
+          LEDarray[Bottom] = CHSV(0, Saturation, 0);
+        }
       }
     }
     // Keep reaction chamber at full brightness even though we chase the leds right through it
     for (int reaction = 0; reaction < ReactionLEDcount; reaction++)
     {
       LEDarray[TopLEDcount + reaction] = CHSV(ReactorHue, Saturation, 255);
-      //LEDarray[TopLEDcount + reaction] = CHSV(0, Saturation, value);
+      if (WarpFactor == 0) {
+        LEDarray[TopLEDcount + reaction] = CHSV(ReactorHue, 0, 64);
+      }
     }
     fadeToBlackBy(LEDarray, NUM_LEDS, (Rate * 0.5)); // Dim all LEDs by Rate/2
+
     FastLED.show();                                  // Show set LEDs
   }
 }
@@ -353,6 +362,7 @@ void receiveWifiData()
     client.println("<br><br>");
     if (pattern == 1)
     {
+      client.println("<a href=\"/warp/0\"\"><button>Offline</button></a>&nbsp;");
       client.println("<a href=\"/warp/1\"\"><button>1</button></a>&nbsp;");
       client.println("<a href=\"/warp/2\"\"><button>2</button></a>&nbsp;");
       client.println("<a href=\"/warp/3\"\"><button>3</button></a>&nbsp;");
@@ -445,7 +455,11 @@ void updateSettings()
     updateSettings();
   }
   else
-  {
+  { if (warp_factor == 0) {
+      WarpFactor = 0;
+      LastWarpFactor = 0;
+      Serial.println(F("Warp Core offline"));
+    }
     if (warp_factor > 0 && warp_factor < 10 && warp_factor != LastWarpFactor)
     {
       WarpFactor = warp_factor;
