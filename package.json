@@ -1,0 +1,16 @@
+{
+  "name": "warpcheck",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Howard Durdle <howard@durdle.com>",
+  "license": "MIT",
+  "dependencies": {
+    "console-stamp": "^0.2.9",
+    "repeat": "^1.2.0",
+    "request": "^2.88.0"
+  }
+}
